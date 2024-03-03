@@ -24,20 +24,12 @@ public static class InitialiserExtensions
     }
 }
 
-public class ApplicationDbContextInitialiser
+public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
 {
-    private readonly ILogger<ApplicationDbContextInitialiser> _logger;
-    private readonly ApplicationDbContext _context;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
-
-    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
-    {
-        _logger = logger;
-        _context = context;
-        _userManager = userManager;
-        _roleManager = roleManager;
-    }
+    private readonly ILogger<ApplicationDbContextInitialiser> _logger = logger;
+    private readonly ApplicationDbContext _context = context;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly RoleManager<IdentityRole> _roleManager = roleManager;
 
     public async Task InitialiseAsync()
     {
@@ -83,7 +75,7 @@ public class ApplicationDbContextInitialiser
             await _userManager.CreateAsync(administrator, "Administrator1!");
             if (!string.IsNullOrWhiteSpace(administratorRole.Name))
             {
-                await _userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
+                await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
             }
         }
 
@@ -103,6 +95,23 @@ public class ApplicationDbContextInitialiser
                 }
             });
 
+            await _context.SaveChangesAsync();
+        }
+
+        if (!_context.Recipes.Any())
+        {
+            _context.Recipes.Add(new Recipe
+            {
+                Title = "Recipe Title",
+                Ingredients =
+                {
+                    new Ingredient {Name = "Ingredient Name" }
+                },
+                Steps =
+                {
+                    new Step { Description= "Step Description" }
+                }
+            });
             await _context.SaveChangesAsync();
         }
     }

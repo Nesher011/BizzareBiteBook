@@ -6,18 +6,12 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace BizzareBiteBook.Infrastructure.Data.Interceptors;
 
-public class AuditableEntityInterceptor : SaveChangesInterceptor
+public class AuditableEntityInterceptor(
+    IUser user,
+    TimeProvider dateTime) : SaveChangesInterceptor
 {
-    private readonly IUser _user;
-    private readonly TimeProvider _dateTime;
-
-    public AuditableEntityInterceptor(
-        IUser user,
-        TimeProvider dateTime)
-    {
-        _user = user;
-        _dateTime = dateTime;
-    }
+    private readonly IUser _user = user;
+    private readonly TimeProvider _dateTime = dateTime;
 
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
@@ -43,7 +37,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
             {
                 entry.Entity.CreatedBy = _user.Id;
                 entry.Entity.Created = _dateTime.GetUtcNow();
-            } 
+            }
 
             if (entry.State == EntityState.Added || entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
             {
@@ -57,8 +51,8 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
 public static class Extensions
 {
     public static bool HasChangedOwnedEntities(this EntityEntry entry) =>
-        entry.References.Any(r => 
-            r.TargetEntry != null && 
-            r.TargetEntry.Metadata.IsOwned() && 
+        entry.References.Any(r =>
+            r.TargetEntry != null &&
+            r.TargetEntry.Metadata.IsOwned() &&
             (r.TargetEntry.State == EntityState.Added || r.TargetEntry.State == EntityState.Modified));
 }

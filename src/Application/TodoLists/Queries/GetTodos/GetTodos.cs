@@ -1,4 +1,5 @@
-﻿using BizzareBiteBook.Application.Common.Interfaces;
+﻿using AutoMapper;
+using BizzareBiteBook.Application.Common.Interfaces;
 using BizzareBiteBook.Application.Common.Models;
 using BizzareBiteBook.Application.Common.Security;
 using BizzareBiteBook.Domain.Enums;

@@ -7,10 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BizzareBiteBook.Infrastructure.Data;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options), IApplicationDbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-
     public DbSet<TodoList> TodoLists => Set<TodoList>();
 
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
@@ -21,4 +19,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         base.OnModelCreating(builder);
     }
+
+    public DbSet<Recipe> Recipes => Set<Recipe>();
+
+    public DbSet<Ingredient> Ingredients => Set<Ingredient>();
 }

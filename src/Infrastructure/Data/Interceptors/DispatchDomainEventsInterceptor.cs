@@ -5,21 +5,15 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace BizzareBiteBook.Infrastructure.Data.Interceptors;
 
-public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
+public class DispatchDomainEventsInterceptor(IMediator mediator) : SaveChangesInterceptor
 {
-    private readonly IMediator _mediator;
-
-    public DispatchDomainEventsInterceptor(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
+    private readonly IMediator _mediator = mediator;
 
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
         DispatchDomainEvents(eventData.Context).GetAwaiter().GetResult();
 
         return base.SavingChanges(eventData, result);
-
     }
 
     public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
@@ -35,7 +29,7 @@ public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
 
         var entities = context.ChangeTracker
             .Entries<BaseEntity>()
-            .Where(e => e.Entity.DomainEvents.Any())
+            .Where(e => e.Entity.DomainEvents.Count != 0)
             .Select(e => e.Entity);
 
         var domainEvents = entities

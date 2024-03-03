@@ -14,6 +14,9 @@ public class LookupDto
         {
             CreateMap<TodoList, LookupDto>();
             CreateMap<TodoItem, LookupDto>();
+            CreateMap<Recipe, LookupDto>();
+            CreateMap<Ingredient, LookupDto>();
+            CreateMap<Step, LookupDto>();
         }
     }
 }
