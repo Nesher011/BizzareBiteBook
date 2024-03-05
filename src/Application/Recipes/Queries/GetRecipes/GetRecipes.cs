@@ -1,6 +1,9 @@
 ﻿using BizzareBiteBook.Application.Common.Interfaces;
 using BizzareBiteBook.Application.Common.Models;
 using BizzareBiteBook.Application.Common.Security;
+using BizzareBiteBook.Domain.Enums;
+using MediatR;
+using Unit = BizzareBiteBook.Domain.Enums.Unit;
 
 namespace BizzareBiteBook.Application.Recipes.Queries.GetRecipes;
 
@@ -14,13 +17,12 @@ public class GetRecipesQueryHandler(IApplicationDbContext context, IMapper mappe
 
     public async Task<RecipesVm> Handle(GetRecipesQuery request, CancellationToken cancellationToken)
     {
-        return new RecipesVm
+        return new RecipesVm()
         {
-            Units = Enum.GetValues(typeof(Domain.Enums.Unit))
-                .Cast<Domain.Enums.Unit>()
+            Units = Enum.GetValues(typeof(Unit))
+                .Cast<Unit>()
                 .Select(p => new LookupDto { Id = (int)p, Title = p.ToString() })
                 .ToList(),
-
             Recipes = await _context.Recipes
                 .AsNoTracking()
                 .ProjectTo<RecipeDto>(_mapper.ConfigurationProvider)

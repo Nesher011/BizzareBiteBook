@@ -2,7 +2,7 @@
 using BizzareBiteBook.Application.Recipes.Commands.CreateRecipe;
 using BizzareBiteBook.Application.Recipes.Commands.DeleteRecipe;
 using BizzareBiteBook.Application.Recipes.Commands.UpdateRecipe;
-
+using BizzareBiteBook.Application.Recipes.Queries.GetRecipes;
 
 namespace BizzareBiteBook.Web.Endpoints;
 
@@ -12,17 +12,17 @@ public class Recipes : EndpointGroupBase
     {
         app.MapGroup(this)
             .RequireAuthorization()
-            //.MapGet(GetTodoItemsWithPagination)
+            //.MapGet(GetRecipes)
             .MapPost(CreateRecipe)
             .MapPut(UpdateRecipe, "{id}")
             //.MapPut(UpdateRecipeDetail, "UpdateDetail/{id}")
             .MapDelete(DeleteRecipe, "{id}");
     }
 
-    //public async Task<PaginatedList<TodoItemBriefDto>> GetTodoItemsWithPagination(ISender sender, [AsParameters] GetTodoItemsWithPaginationQuery query)
-    //{
-    //    return await sender.Send(query);
-    //}
+    public async Task<RecipesVm> GetRecipes(ISender sender)
+    {
+        return await sender.Send(new GetRecipesQuery());
+    }
 
     public async Task<int> CreateRecipe(ISender sender, CreateRecipeCommand command)
     {
